@@ -1,6 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Table from '../components/Table.astro'
+import Table from '../components/Table.astro' 
+
+export const prerender = true
 ---
 
 <Layout>
@@ -11,6 +13,8 @@ import Table from '../components/Table.astro'
     </div>
   </section>
   <section class="pb-8 scroll-m-20 w-full mx-auto container flex justify-center">
-    <Table />
+    <Table server:defer>
+      <p slot="fallback" class="text-xl text-overlay1">Loading...</p>
+    </Table>
   </section>
 </Layout>
