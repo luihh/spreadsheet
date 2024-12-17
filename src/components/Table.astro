@@ -60,7 +60,7 @@ const headers = [
 
 <div class="w-full overflow-x-auto lg:w-auto">
   <table class="text-sm text-left rtl:text-right text-subtext0">
-    <thead class="text-xm text-center uppercase text-overlay2 bg-mantle">
+    <thead class="text-xm text-center uppercase text-overlay1 bg-mantle">
       <tr>
         {headers.map((header, index) => (
           <th key={index} scope="col" class="px-6 py-3">
@@ -78,7 +78,7 @@ const headers = [
             <td
               key={cellIndex}
               class={`px-4 py-4 text-center font-bold whitespace-nowrap 
-                ${cellIndex === 0 ? 'bg-mantle text-overlay2' : ''} 
+                ${cellIndex === 0 ? 'bg-mantle text-overlay1' : ''} 
                 ${cellIndex === 1 ? 'text-text' : ''} 
                 ${cellIndex === 2 ? getCellColor(cell) : ''}
                 ${cellIndex === 4 ? getEnjoymentColor(cell) : ''} 
