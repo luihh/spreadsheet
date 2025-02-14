@@ -46,16 +46,7 @@ const getWorstFailColor = (value) => {
   } else return '';
 };
 
-const headers = [
-  '#',
-  'Level',
-  '100%',
-  'Attempts',
-  'Enjoyment',
-  'Worst Fail',
-  'Skills',
-  'Extras / Fun Facts',
-];
+const headers = data.length > 0 ? Object.keys(data[0]) : [];
 ---
 
 <div class="w-full overflow-x-auto lg:w-auto">
