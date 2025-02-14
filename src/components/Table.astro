@@ -47,6 +47,38 @@ const getWorstFailColor = (value) => {
 };
 
 const headers = data.length > 0 ? Object.keys(data[0]) : [];
+
+const getDifficultyColor = (value) => {
+  if (value === 'N/A') return ''; // Skip N/A values
+
+  const difficulty = parseInt(value);
+  if (isNaN(difficulty)) return ''; // Fallback if the value isn't a number
+
+  // Extract difficulty values excluding "N/A"
+  const validDifficulties = data.map(row => parseInt(row['Top (AREDL)'])).filter(d => !isNaN(d));
+
+  const sortedDifficulties = [...validDifficulties].sort((a, b) => a - b);  // Sort in ascending order
+
+  const minDifficulty = sortedDifficulties[0];  // Hardest level (lowest number)
+  const maxDifficulty = sortedDifficulties[sortedDifficulties.length - 1];  // Easiest level (highest number)
+
+  // If all difficulties are the same, return CYAN for consistency
+  if (minDifficulty === maxDifficulty) return TEXT_COLORS.CYAN;
+
+  // Calculate the boundaries for each range
+  const total = sortedDifficulties.length;
+  const lowerThreshold = sortedDifficulties[Math.floor(total * 0.33)];  // First third
+  const upperThreshold = sortedDifficulties[Math.floor(total * 0.66)];  // Second third
+
+  // Assign Cyan to the hardest level (the minimum difficulty)
+  if (difficulty === minDifficulty) return TEXT_COLORS.CYAN;
+
+  // Assign colors based on the difficulty value
+  if (difficulty <= lowerThreshold) return TEXT_COLORS.RED; // Hardest (lowest difficulty)
+  if (difficulty >= upperThreshold) return TEXT_COLORS.GREEN; // Easiest (highest difficulty)
+  return TEXT_COLORS.YELLOW; // Medium difficulty
+};
+
 ---
 
 <div class="w-full overflow-x-auto lg:w-auto">
@@ -73,7 +105,8 @@ const headers = data.length > 0 ? Object.keys(data[0]) : [];
                 ${cellIndex === 1 ? 'text-text' : ''} 
                 ${cellIndex === 2 ? getCellColor(cell) : ''}
                 ${cellIndex === 4 ? getEnjoymentColor(cell) : ''} 
-                ${cellIndex === 5 ? getWorstFailColor(cell) : ''}`}
+                ${cellIndex === 5 ? getWorstFailColor(cell) : ''}
+                ${cellIndex === 7 ? getDifficultyColor(cell) : ''}`}
             >
               <div class="flex justify-center">
                 {cellIndex === 2 && cell === 'TRUE' && <Icon name="Check" class="text-xl" />}
