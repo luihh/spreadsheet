@@ -23,7 +23,22 @@ const RATING_THRESHOLDS = {
   WORST_FAIL: [80, 60],
 }
 
+const TIER_COLORS = {
+  "Beginner": "text-blue-400",
+  "Easy": "text-cyan-200",
+  "Medium": "text-green-300",
+  "Hard": "text-yellow-200",
+  "Very Hard": "text-yellow-500",
+  "Insane": "text-red-500",
+  "Extreme": "text-purple-400",
+  "Remorseless": "text-violet-500",
+  "Relentless": "text-violet-300",
+  "Terrifying": "text-pink-200",
+  "Catastrophic": "text-rose-400",
+}; 
+
 const getCellColor = (value) => CELL_COLORS[value] || '';
+const getTierColor = (value) => TIER_COLORS[value] || '';
 
 const getEnjoymentColor = (value) => {
   const ratingNumber = parseInt(value.split('/')[0]);
@@ -47,38 +62,6 @@ const getWorstFailColor = (value) => {
 };
 
 const headers = data.length > 0 ? Object.keys(data[0]) : [];
-
-const getDifficultyColor = (value) => {
-  if (value === 'N/A') return ''; // Skip N/A values
-
-  const difficulty = parseInt(value);
-  if (isNaN(difficulty)) return ''; // Fallback if the value isn't a number
-
-  // Extract difficulty values excluding "N/A"
-  const validDifficulties = data.map(row => parseInt(row['Top (AREDL)'])).filter(d => !isNaN(d));
-
-  const sortedDifficulties = [...validDifficulties].sort((a, b) => a - b);  // Sort in ascending order
-
-  const minDifficulty = sortedDifficulties[0];  // Hardest level (lowest number)
-  const maxDifficulty = sortedDifficulties[sortedDifficulties.length - 1];  // Easiest level (highest number)
-
-  // If all difficulties are the same, return CYAN for consistency
-  if (minDifficulty === maxDifficulty) return TEXT_COLORS.CYAN;
-
-  // Calculate the boundaries for each range
-  const total = sortedDifficulties.length;
-  const lowerThreshold = sortedDifficulties[Math.floor(total * 0.33)];  // First third
-  const upperThreshold = sortedDifficulties[Math.floor(total * 0.66)];  // Second third
-
-  // Assign Cyan to the hardest level (the minimum difficulty)
-  if (difficulty === minDifficulty) return TEXT_COLORS.CYAN;
-
-  // Assign colors based on the difficulty value
-  if (difficulty <= lowerThreshold) return TEXT_COLORS.RED; // Hardest (lowest difficulty)
-  if (difficulty >= upperThreshold) return TEXT_COLORS.GREEN; // Easiest (highest difficulty)
-  return TEXT_COLORS.YELLOW; // Medium difficulty
-};
-
 ---
 
 <div class="w-full overflow-x-auto lg:w-auto">
@@ -97,16 +80,19 @@ const getDifficultyColor = (value) => {
         <tr
           key={rowIndex}
           class="bg-crust border-b border-mantle">
-          {Object.values(row).map((cell, cellIndex) => (
+          {Object.values(row).map((cell, cellIndex) => {
+            let cellColumn = Object.keys(row)[cellIndex]
+            return (
             <td
               key={cellIndex}
               class={`px-4 py-4 text-center font-bold whitespace-nowrap 
-                ${cellIndex === 0 ? 'bg-mantle text-overlay1' : ''} 
-                ${cellIndex === 1 ? 'text-text' : ''} 
-                ${cellIndex === 2 ? getCellColor(cell) : ''}
-                ${cellIndex === 4 ? getEnjoymentColor(cell) : ''} 
-                ${cellIndex === 5 ? getWorstFailColor(cell) : ''}
-                ${cellIndex === 7 ? getDifficultyColor(cell) : ''}`}
+                ${cellColumn === '#' ? 'bg-mantle text-overlay1' : ''} 
+                ${cellColumn === 'Level' ? 'text-text' : ''} 
+                ${cellColumn === '100%' ? getCellColor(cell) : ''}
+                ${cellColumn === 'Enjoyment' ? getEnjoymentColor(cell) : ''} 
+                ${cellColumn === 'Worst Fail' ? getWorstFailColor(cell) : ''}
+                ${cellColumn === 'Tier (NLW)' ? getTierColor(cell) : ''}
+                `}
             >
               <div class="flex justify-center">
                 {cellIndex === 2 && cell === 'TRUE' && <Icon name="Check" class="text-xl" />}
@@ -116,7 +102,8 @@ const getDifficultyColor = (value) => {
                 {cellIndex !== 2 && cell}
               </div>
             </td>
-          ))}
+          )
+          })}
         </tr>
       ))}
     </tbody>
